@@ -1,3 +1,5 @@
+var all = [];
+
 chrome.devtools.network.onRequestFinished.addListener(
   function (request) {
     if (request.request.url.indexOf("graphqlbatch") > -1) {
@@ -11,7 +13,15 @@ chrome.devtools.network.onRequestFinished.addListener(
         var messages = message_thread.messages;
         if (!messages) return;
 
-        console.log(Object.values(messages.nodes));
+        messages.nodes.forEach(message => {
+          if (all.filter(orig => {
+            return orig.timestamp_precise === message.timestamp_precise;
+          }).length === 0) {
+            all.push(message);
+          }
+        })
+
+        console.log(all);
       });
     }
   });
